@@ -1,0 +1,15 @@
+for dir in 'app'; do
+  src=$dir
+  files=()
+  for f in $(git diff --staged --name-only $dir); do
+    if [[ $f == *.py ]] && [[ -f $f ]]; then
+      files+=($f)
+    fi
+  done
+  printf -v files '%s ' ${files[@]}
+  len=${#files}
+  files=${files::len-1}
+  if [[ ! -z $files ]]; then
+    docker compose run --rm app sh -c "/scripts/format.sh"
+  fi
+done
